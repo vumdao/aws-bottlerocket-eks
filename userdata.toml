@@ -1,0 +1,13 @@
+[settings.kubernetes]
+api-server = "https://abc.def.ap-northeast-1.eks.amazonaws.com"
+cluster-certificate = "TkQgQ0VSVElGSUNBVEUtLS0tLQo="
+cluster-name = "eks-dev"
+cluster-dns-ip = "10.100.0.10"
+
+[settings.kubernetes.node-labels]
+"lifecycle" = "on-demand"
+"role" = "airflow"
+"type" = "af-stateful"
+
+[settings.kubernetes.node-taints]
+"dedicated" = "airflow:NoSchedule"
