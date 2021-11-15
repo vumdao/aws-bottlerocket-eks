@@ -79,13 +79,25 @@ Bottlerocket comes to the rescue when facing the above issues. The Bottlerocket 
 
 ## 🚀 Create ASG with the launch template <a name="Create-ASG-with-the-launch-template"></a>
 - After the ASG scales the desired capacity, we can check the bottlerocket nodes
-- List the nodes in the EKS cluster along with the attributes of interest to us:
+- List the nodes in the EKS cluster which have `Bottlerocket OS` and check the Pods are assigned to them
 
 ```
 # kubectl get nodes -o=custom-columns=NODE:.metadata.name,ARCH:.status.nodeInfo.architecture,OS-Image:.status.nodeInfo.osImage,OS:.status.nodeInfo.operatingSystem | grep Bottlerocket
-ip-172-10-12-246.ap-northeast-1.compute.internal   amd64   Bottlerocket OS 1.4.0 (aws-k8s-1.18)   linux
-ip-172-10-14-51.ap-northeast-1.compute.internal    amd64   Bottlerocket OS 1.4.0 (aws-k8s-1.18)   linux
-ip-172-10-21-118.ap-northeast-1.compute.internal   amd64   Bottlerocket OS 1.4.0 (aws-k8s-1.18)   linux
+ip-172-10-11-131.ap-northeast-1.compute.internal   amd64   Bottlerocket OS 1.4.0 (aws-k8s-1.18)   linux
+ip-172-10-21-64.ap-northeast-1.compute.internal    amd64   Bottlerocket OS 1.4.0 (aws-k8s-1.18)   linux
+ip-172-10-31-142.ap-northeast-1.compute.internal   amd64   Bottlerocket OS 1.4.0 (aws-k8s-1.18)   linux
+
+# kubectl get pod -n kube-system -owide | grep ip-172-10-11-131.ap-northeast-1.compute.internal
+aws-node-t622b                        1/1     Running   1          3h38m   172.10.11.131   ip-172-10-11-131.ap-northeast-1.compute.internal   <none>           <none>
+aws-node-termination-handler-ql7t2    1/1     Running   0          3h38m   172.10.11.131   ip-172-10-11-131.ap-northeast-1.compute.internal   <none>           <none>
+efs-csi-node-lbhcq                    3/3     Running   0          3h37m   172.10.11.131   ip-172-10-11-131.ap-northeast-1.compute.internal   <none>           <none>
+kube-proxy-j6l48                      1/1     Running   0          3h38m   172.10.11.131   ip-172-10-11-131.ap-northeast-1.compute.internal   <none>           <none>
+
+# kubectl get pod -owide -n airflow | grep ip-172-10-11-131.ap-northeast-1.compute.internal
+airflow-flower-59774778b4-fpfdm             2/2     Running   0          3h32m   172.10.11.76    ip-172-10-11-131.ap-northeast-1.compute.internal   <none>           <none>
+airflow-scheduler-cdccf9d86-xc4hr           2/2     Running   0          3h32m   172.10.11.113   ip-172-10-11-131.ap-northeast-1.compute.internal   <none>           <none>
+airflow-sync-users-7fd7c7db8-6whhr          2/2     Running   0          3h32m   172.10.11.36    ip-172-10-11-131.ap-northeast-1.compute.internal   <none>           <none>
+airflow-web-77d59cfcbb-bxsj5                2/2     Running   0          3h32m   172.10.11.61    ip-172-10-11-131.ap-northeast-1.compute.internal   <none>           <none>
 ```
 
 - Start an SSM session. In order to SSH to the node, it needs to run `enable-admin-container` (which is disabled by default) from SSM console
